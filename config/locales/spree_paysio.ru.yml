@@ -1,0 +1,2 @@
+ru:
+  order_payment_state: "Ваш заказ был %{state}"

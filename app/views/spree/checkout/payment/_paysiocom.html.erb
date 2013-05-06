@@ -1,0 +1,5 @@
+<%= javascript_include_tag static_url('/paysio.js') %>
+<%= stylesheet_link_tag static_url('/paysio.css') %>
+
+<div id="paysio"></div>
+<%= paysio_form_for(@order) %>
