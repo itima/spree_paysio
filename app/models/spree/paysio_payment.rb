@@ -11,7 +11,8 @@ module Spree
     # validate :order_id, presence: true
 
     def success?
-      valid?
+      charge = PaysioPayment.retrieve_charge(charge_id)
+      ['paid', 'pending'].include? charge.status
     end
 
     def authorization
@@ -45,8 +46,9 @@ module Spree
       #
       # Returns created Paysio::Charge object.
       def create_charge(order, params, return_url)
-        if exists?(order)
-          retrieve_charge(paysio_payment.charge_id)
+        charge = any_charge?(order, params[:payment_system_id])
+        if charge
+          charge.respond_to?(:charge_id) ? retrieve_charge(charge.charge_id) : charge
         else
           attributes = {
             amount: "#{order.total.to_i * 100}",
@@ -114,18 +116,43 @@ module Spree
         end
         event           
       end
-    private
+
       def retrieve_charge(charge_id)
         Paysio.api_key = PaymentMethod::PaysioCom.preferences[:client_api_key]
         Paysio::Charge.retrieve(charge_id)
       end
 
-      # TODO: need to check in paysio charges...
-      def exist?(order)
-        paysio_payment = find_by_order_id(order.number)
-        paysio_payment.present? && paysio_payment.payment_system_id == params[:payment_system_id]
+      # amount  bigint  сумма платежа в центах
+      # payment_system_id string  код платежной системы
+      # status  string  статус платежа
+      # description string описание платежа
+      # created string дата создания в формате Unix Time
+      def charges_all(params = {})
+        Paysio.api_key = PaymentMethod::PaysioCom.preferences[:client_api_key]
+        Paysio::Charge.all(params)
       end
-      alias :exists? :exist?
+
+      # Public: Checks local stored payments and pays.io charges for payment this order.
+      #
+      # order             - The Spree::Order object check.
+      # payment_system_id - The payment_system_id to check.
+      #
+      # Returns true if the charge already exists or false - if not.
+      def any_charge?(order, payment_system_id)
+        paysio_payment = find_by_order_id(order.number)
+        if paysio_payment.present? && paysio_payment.payment_system_id == params[:payment_system_id]
+          paysio_payment
+        else
+          charges = charges_all(amount: "#{order.total.to_i * 100}", 
+                        payment_system_id: payment_system_id,
+                        description: "Order ##{order.number}")
+          # We assume that described above conditions is enought to find charge
+          if charges.count > 0
+            charges.first
+          end
+        end
+      end
+      alias :exists? :any_charge?
     end
   end
 end
