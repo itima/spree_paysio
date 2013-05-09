@@ -1,2 +1,3 @@
 ru:
   order_payment_state: "Ваш заказ был %{state}"
+  order_already_paid: "Это заказ уже оплачен. Свяжитесь со службой поддержки!"

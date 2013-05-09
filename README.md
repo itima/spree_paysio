@@ -1,13 +1,27 @@
 SpreePaysio
 ===========
 
-Introduction goes here.
+Provides Pays.IO gateway support for Spree.
 
-
-Example
+Installation
 =======
 
-Example goes here.
+
+In your Gemfile:
+
+    gem 'spree'
+    gem 'spree_paysio', :git => 'git@github.com:itima/spree_paysio.git' # make sure to include after spree
+
+**Note:** *If you are not using the latest Spree, please consult the Versionfile at the
+root of the repository to determine which branch to use.*
+
+Then run from the command line:
+
+    $ bundle install
+    $ rails g spree_paysio:install
+
+Finally, make sure to **restart your app**. Navigate to *Configuration > Payment Methods > New Payment Method*  in the admin panel and you should see PaysioCom PaymentMethod have been added to the list.
+
 
 Testing
 -------

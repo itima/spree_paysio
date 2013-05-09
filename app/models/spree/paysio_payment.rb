@@ -122,11 +122,11 @@ module Spree
         Paysio::Charge.retrieve(charge_id)
       end
 
-      # amount  bigint  сумма платежа в центах
-      # payment_system_id string  код платежной системы
-      # status  string  статус платежа
-      # description string описание платежа
-      # created string дата создания в формате Unix Time
+      # amount            - bigint - сумма платежа в центах
+      # payment_system_id - string - код платежной системы
+      # status            - string - статус платежа
+      # description       - string - описание платежа
+      # created           - string - дата создания в формате Unix Time
       def charges_all(params = {})
         Paysio.api_key = PaymentMethod::PaysioCom.preferences[:client_api_key]
         Paysio::Charge.all(params)
@@ -143,9 +143,14 @@ module Spree
         if paysio_payment.present? && paysio_payment.payment_system_id == params[:payment_system_id]
           paysio_payment
         else
-          charges = charges_all(amount: "#{order.total.to_i * 100}", 
+          charges = charges_all(status: "paid", 
                         payment_system_id: payment_system_id,
                         description: "Order ##{order.number}")
+          unless charges.count > 0
+            charges = charges_all(amount: "#{order.total.to_i * 100}", 
+                          payment_system_id: payment_system_id,
+                          description: "Order ##{order.number}")
+          end
           # We assume that described above conditions is enought to find charge
           if charges.count > 0
             charges.first

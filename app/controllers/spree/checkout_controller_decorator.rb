@@ -26,6 +26,11 @@ module Spree
               flash[:warn] = "Please visit #{@charge.redirect} to pay your order!"
               session[:paysio_redirect] = @charge.redirect
             end
+            if @charge.status == 'paid'
+              flash[:error] = t(:order_already_paid)
+              redirect_to cart_path
+              return
+            end
             params[:payment_source]["#{PaymentMethod::PaysioCom.current_method.id}"]["charge_id"] = @charge.id
           end
         end        
