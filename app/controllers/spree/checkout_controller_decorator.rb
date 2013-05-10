@@ -13,7 +13,7 @@ module Spree
             "wallet" => params[:wallet].present? ? params[:wallet] : ""
           }
         })
-        
+
         # if paysio was selected 
         if PaymentMethod::PaysioCom.current_method.id.to_s == params[:order][:payments_attributes].first[:payment_method_id]
           @charge = PaysioPayment.create_charge(@order, params, paysio_charges_url)

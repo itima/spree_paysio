@@ -46,12 +46,16 @@ module Spree
       #
       # Returns created Paysio::Charge object.
       def create_charge(order, params, return_url)
+        shipping_cost = 0
+        if params[:order][:shipping_method_id].present?
+          shipping_cost = Spree::ShippingMethod.find(params[:order][:shipping_method_id]).calculator.compute(order)
+        end
         charge = any_charge?(order, params[:payment_system_id])
         if charge
           charge.respond_to?(:charge_id) ? retrieve_charge(charge.charge_id) : charge
         else
           attributes = {
-            amount: "#{order.total.to_i * 100}",
+            amount: "#{(order.total.to_i + shipping_cost.to_i) * 100}",
             order_id: "#{order.number}",
             currency_id: 'rur',
             description: "Order ##{order.number}",
