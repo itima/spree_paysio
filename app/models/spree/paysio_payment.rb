@@ -87,7 +87,9 @@ module Spree
       def process_charge(charge_id)
         charge = retrieve_charge(charge_id)
 
-        paysio_payment = find_by_charge_id(charge.id)
+        #TODO: check if nessesery amounts of charge and order?
+
+        paysio_payment = find_by_charge_id(charge_id)
         if paysio_payment.present?
           paysio_payment.change_payment_state(charge.status)
         end
