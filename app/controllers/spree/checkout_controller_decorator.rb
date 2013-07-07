@@ -19,7 +19,7 @@ module Spree
           @charge = PaysioPayment.create_charge(@order, params, paysio_charges_url)
           if @charge.class == Paysio::Errors::BadRequest
             flash[:error] = @charge.params.first["message"]
-            redirect_to checkout_state_path(@order.state)
+            redirect_to cart_path
             return
           else
             if @charge.redirect

@@ -55,7 +55,7 @@ module Spree
           charge.respond_to?(:charge_id) ? retrieve_charge(charge.charge_id) : charge
         else
           attributes = {
-            amount: "#{(order.total.to_i + shipping_cost.to_i) * 100}",
+            amount: "#{compute_total(order, params) * 100}",
             order_id: "#{order.number}",
             currency_id: 'rur',
             description: "Order ##{order.number}",
@@ -79,6 +79,36 @@ module Spree
 
       end
       
+
+      # Public: Compute order total to process payment.
+      #
+      # order  - Spree::Order object.
+      # params - Action params.
+      #
+      # Returns total as integer.
+      def compute_total(order, params)
+        total = order.item_total
+        shipping_cost = 0
+        promotion_discount = 0
+        if params[:order][:shipping_method_id].present? && order.adjustments.shipping.empty?
+          shipping_cost = Spree::ShippingMethod.find(params[:order][:shipping_method_id]).calculator.compute(order)
+        else
+          # shipping_cost = order.adjustments.shipping.map(&:amount).sum.to_i #computes later
+        end
+        
+        if params[:order][:coupon_code].present?
+          promotion = Spree::Promotion.find_by_code(params[:order][:coupon_code])
+          if promotion.present?
+            promotion_discount = promotion.actions.first.calculator.compute(order)
+          else
+            promotion_discount = order.adjustments.promotion.eligible.first.try(:amount)
+          end          
+        end
+        promo = promotion.try(:actions).try(:first)
+        adjustments_total = order.adjustments.eligible.where('originator_id <> ? ', promo || 0).map(&:amount).sum
+        (total + shipping_cost - promotion_discount - adjustments_total).to_i
+      end
+
       # Public: Process recieved charge from paysio.
       #
       # charge_id  - Charge id param .
