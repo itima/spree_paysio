@@ -2,7 +2,7 @@
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree_paysio'
-  s.version     = '1.0.0.rc5'
+  s.version     = '1.0.0.rc6'
   s.summary     = 'Spree Pays.IO'
   s.description = 'Support Pays.IO payment method for Spree'
   s.required_ruby_version = '>= 1.9.0'

@@ -106,7 +106,7 @@ module Spree
         end
         promo = promotion.try(:actions).try(:first)
         adjustments_total = order.adjustments.eligible.where('originator_id <> ? ', promo || 0).map(&:amount).sum
-        (total + shipping_cost - promotion_discount - adjustments_total).to_i
+        (total + shipping_cost - promotion_discount + adjustments_total).to_i
       end
 
       # Public: Process recieved charge from paysio.
