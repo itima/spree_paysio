@@ -4,8 +4,8 @@ module Spree
 
   private
     def paysio_redirect
-      if session[:paysio_redirect]
-        redirect_to session.delete(:paysio_redirect)
+      if (path = session.delete(:paysio_redirect))
+        redirect_to path unless @order.errors.any?
       end
     end
   end
