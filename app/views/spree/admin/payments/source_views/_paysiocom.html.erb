@@ -1,0 +1,43 @@
+<fieldset>
+  <legend align="center"><%= t('paysio') %></legend>
+
+  <table class="index">
+    <thead>
+      <tr>
+        <th colspan="6"><%= t('paysio.payment') %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><label><%= t("paysio.charge_id") %>:</label></td>
+        <td>
+          <%= payment.source.charge_id %>
+        </td>
+      </tr>
+      <tr>
+        <td><label><%= t("paysio.merchant_id") %>:</label></td>
+        <td>
+          <%= payment.source.merchant_id %>
+        </td>
+      </tr>
+      <tr>
+        <td><label><%= t("paysio.payment_system_id") %>:</label></td>
+        <td>
+          <%= payment.source.payment_system_id %>
+        </td>
+      </tr>
+      <tr>
+        <td><label><%= t("paysio.wallet") %>:</label></td>
+        <td>
+          <%= payment.source.wallet %>
+        </td>
+      </tr>
+      <tr>
+        <td><label><%= t("paysio.object") %>:</label></td>
+        <td>
+          <%= payment.source.object %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</fieldset>
